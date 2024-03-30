@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ITask } from "../interfaces/task.interface";
 import { TaskService } from "../services/task.service";
+import { io } from "../config/websocket";
 
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
@@ -61,6 +62,9 @@ export class TaskController {
     try {
       const taskData = request.body;
       const createdTask = await this.taskService.createTask(taskData);
+
+      io.emit("taskUpdated", createdTask);
+
       reply.send(createdTask);
     } catch (error) {
       reply.status(500).send(error);
@@ -77,6 +81,9 @@ export class TaskController {
         taskId,
         request.body
       );
+
+      io.emit("taskUpdated", updatedTask);
+
       reply.send(updatedTask);
     } catch (error) {
       reply.status(500).send(error);
@@ -90,6 +97,9 @@ export class TaskController {
     try {
       const taskId = request.params.id;
       await this.taskService.deleteTask(taskId);
+
+      io.emit("taskUpdated", taskId);
+
       reply.status(204).send();
     } catch (error) {
       reply.status(500).send(error);
@@ -117,6 +127,8 @@ export class TaskController {
           .send("The task with the given ID was not found.");
       }
 
+      io.emit("taskUpdated", updatedTask);
+
       reply.send(updatedTask);
     } catch (error) {
       reply.status(500).send(error);
@@ -136,6 +148,9 @@ export class TaskController {
         taskIds,
         completed
       );
+
+      io.emit("taskUpdated", updatedTasks);
+
       reply.send(updatedTasks);
     } catch (error) {
       reply.status(500).send(error);
@@ -154,6 +169,9 @@ export class TaskController {
       if (deletedTasksCount === 0) {
         return reply.status(404).send("No tasks found with the provided IDs.");
       }
+
+      io.emit("taskUpdated", taskIds);
+
       reply.status(204).send();
     } catch (error) {
       reply.status(500).send(error);
