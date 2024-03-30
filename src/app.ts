@@ -2,6 +2,7 @@ import fastify from "fastify";
 import dotenv from "dotenv";
 import taskRoutes from "./routes/task.routes";
 import startDatabase from "./database";
+import errorHandlerMiddleware from "./middleware/errorHandler";
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const server = fastify({ logger: true });
 startDatabase();
 
 server.register(taskRoutes, { prefix: "/api/v1/tasks" });
+server.register(errorHandlerMiddleware);
 
 // Start project
 server.listen({ port: 3000 }, (err, address) => {
