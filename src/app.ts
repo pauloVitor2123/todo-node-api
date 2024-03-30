@@ -1,5 +1,4 @@
 import fastify from "fastify";
-// import mongoose from "mongoose";
 import dotenv from "dotenv";
 import taskRoutes from "./routes/task.routes";
 import mongoose from "mongoose";
@@ -9,7 +8,6 @@ dotenv.config();
 const server = fastify({ logger: true });
 
 // Connect database
-console.log("MONGO URI => ", process.env.MONGODB_URI);
 mongoose
   .connect(process.env.MONGODB_URI as string, {
     dbName: "todo-database",
@@ -19,6 +17,7 @@ mongoose
 
 server.register(taskRoutes, { prefix: "/api/v1/tasks" });
 
+// Start project
 server.listen({ port: 3000 }, (err, address) => {
   if (err) {
     console.error(err);
