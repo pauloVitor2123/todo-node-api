@@ -1,19 +1,14 @@
 import fastify from "fastify";
 import dotenv from "dotenv";
 import taskRoutes from "./routes/task.routes";
-import mongoose from "mongoose";
+import startDatabase from "./database";
 
 dotenv.config();
 
 const server = fastify({ logger: true });
 
 // Connect database
-mongoose
-  .connect(process.env.MONGODB_URI as string, {
-    dbName: "todo-database",
-  })
-  .then(() => console.log("Connected to the database"))
-  .catch((e) => console.log("Error connecting to database", e));
+startDatabase();
 
 server.register(taskRoutes, { prefix: "/api/v1/tasks" });
 
